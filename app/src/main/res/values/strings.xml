@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Restaurants</string>
+    <string name="welcomeStr">Your own restaurant introduce application to help you plan your next vacation!</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="select_a_restaurant">Select a restaurant below to see more details on each restaurant and our top exploring recommendations</string>
+</resources>
