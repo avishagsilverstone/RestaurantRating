@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/restaurantListFragment"
+        android:title="Home"
+        android:icon="@android:drawable/ic_menu_share" />
+
+    <item
+        android:id="@+id/myRestaurantListFragment"
+        android:title="My Posts"
+        android:icon="@android:drawable/ic_menu_edit" />
+
+    <item
+        android:id="@+id/mapsFragment"
+        android:title="Map"
+        android:icon="@android:drawable/ic_menu_mapmode" />
+
+    <item
+        android:id="@+id/restaurantFragment"
+        android:title="Restaurant Info"
+        android:icon="@android:drawable/ic_menu_gallery" />
+
+    <item
+        android:id="@+id/profileFragment"
+        android:title="Profile"
+        android:icon="@android:drawable/ic_menu_myplaces" />
+
+</menu>

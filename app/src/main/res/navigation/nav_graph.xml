@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/restaurantListFragment"
+    android:id="@+id/nav_graph">
+
+    <fragment
+        android:id="@+id/restaurantListFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.RestaurantListFragment"
+        android:label="RestaurantListFragment" >
+        <action
+            android:id="@+id/action_restaurantListFragment_to_restaurantPageFragment"
+            app:destination="@id/restaurantPageFragment" />
+        <action
+            android:id="@+id/action_restaurantListFragment_to_addRestaurantFragment"
+            app:destination="@id/addRestaurantFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/restaurantPageFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.RestaurantDetailFragment"
+        android:label="RestaurantPageFragment" />
+
+    <fragment
+        android:id="@+id/addRestaurantFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.AddRestaurantFragment"
+        android:label="AddRestaurantFragment" />
+
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.MapFragment"
+        android:label="MapsFragment">
+        <action
+            android:id="@+id/action_mapsFragment_to_restaurantPageFragment"
+            app:destination="@id/restaurantPageFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/myRestaurantListFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.FavoriteListFragment"
+        android:label="MyRestaurantListFragment" >
+        <action
+            android:id="@+id/action_myRestaurantListFragment_to_restaurantPageFragment"
+            app:destination="@id/restaurantPageFragment" />
+        <action
+            android:id="@+id/action_myRestaurantListFragment_to_addRestaurantFragment"
+            app:destination="@id/addRestaurantFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/restaurantFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.NewsFragment"
+        android:label="restaurantFragment" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.ProfileEditFragment"
+        android:label="ProfileFragment" />
+
+</navigation>
