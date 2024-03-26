@@ -1,0 +1,190 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_rounded_cardview"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <ImageView
+                android:id="@+id/restaurantImage"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/restaurant_placeholder"
+                android:adjustViewBounds="true"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/name_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Restaurant Name"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/name_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Name"
+                android:textColor="@color/black"
+                android:background="@drawable/edit_text_bg_rounded"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/description_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Restaurant Description"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/description_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Restaurant Description"
+                android:lines="3"
+                android:textColor="@color/black"
+                android:textAlignment="textStart"
+                android:background="@drawable/edit_text_bg_rounded"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/date_label"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Date Started"
+                    android:textColor="@color/black"
+                    android:paddingBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/date_edittext"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Date Started"
+                    android:textColor="@color/black"
+                    android:background="@drawable/edit_text_bg_rounded"
+                    android:padding="12dp"
+                    android:layout_marginEnd="4dp"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+
+                <TextView
+                    android:id="@+id/age_label"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Age of Restaurant"
+                    android:textColor="@color/black"
+                    android:paddingBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/age_edittext"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Age of Restaurant"
+                    android:textColor="@color/black"
+                    android:background="@drawable/edit_text_bg_rounded"
+                    android:padding="12dp"
+                    android:layout_marginStart="4dp"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/map_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select Address"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/map_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select Address"
+                android:textColor="@color/black"
+                android:background="@drawable/edit_text_bg_rounded"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:padding="12dp"
+                android:drawablePadding="8dp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/suggestion_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Suggestion"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/suggestion_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your suggestion here"
+                android:textColor="@color/black"
+                android:background="@drawable/edit_text_bg_rounded"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Edits"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/colorPrimary"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:textColor="@color/black"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"/>
+
+</LinearLayout>
+</ScrollView>
