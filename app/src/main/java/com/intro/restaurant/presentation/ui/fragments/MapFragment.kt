@@ -27,6 +27,8 @@ class MapFragment : Fragment() {
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
+        map.getUiSettings().setZoomControlsEnabled(true);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(32.109333, 34.855499), 5f))
         setupMapListeners()
         loadRestaurants()
     }
@@ -66,7 +68,6 @@ class MapFragment : Fragment() {
                 bundle.putString("menu", menu)
                 bundle.putDouble("latitude", latitude)
                 bundle.putDouble("longitude", longitude)
-
                 bundle.putString("address", address)
                 bundle.putString("foodtype", foodtype)
                 bundle.putString("review", review)

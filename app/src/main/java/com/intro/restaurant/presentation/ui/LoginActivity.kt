@@ -39,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
 
         val currentUser: FirebaseUser? = mAuth.currentUser
         if (currentUser != null) {
-            navigateToRestaurantList()
+            getUserTypeAndNavigate()
         }
 
         val buttonRegister: Button = findViewById(R.id.register_button)

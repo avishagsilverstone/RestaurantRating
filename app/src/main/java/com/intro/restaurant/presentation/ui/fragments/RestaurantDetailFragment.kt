@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import androidx.room.Room
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -35,7 +36,10 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.intro.restaurant.presentation.ui.LoginActivity.Companion.getUserType
+import me.ibrahimsn.lib.SmoothBottomBar
 
 class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
     private lateinit var map: GoogleMap
@@ -49,9 +53,9 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
     private lateinit var textMenu: EditText
     private lateinit var foodType: EditText
     private lateinit var map_edittext: EditText
-    private lateinit var textReview: EditText
+    private lateinit var reviewEditText: EditText
     private lateinit var reviewTextView: TextView
-    private lateinit var saveEdits: Button
+    private lateinit var saveButton: Button
     private lateinit var deleteButton: Button
     private var selectedImageUri: Uri? = null
     private var selectedLocation: LatLng? = null
@@ -71,6 +75,19 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
             }
             restaurantNameEditText.setText(currentRestaurant.name)
             reviewTextView.setText(currentRestaurant.review)
+
+            var userName = "";
+            val user = mAuth.currentUser
+            user?.let {
+                userName = user.displayName.toString()
+            }
+            val reviews = currentRestaurant.review!!.split("\n")
+            for (review in reviews) {
+                if (review.startsWith("$userName:")) {
+                    reviewEditText.setText(review.split(':')[1])
+                }
+            }
+
             foodType.setText(currentRestaurant.foodtype)
             map_edittext.setText(currentRestaurant.address)
             textMenu.setText(currentRestaurant.menu)
@@ -91,7 +108,32 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
             }
         }
     }
+    override fun onResume() {
+        super.onResume()
+        hideBottomNavigationBar()
+    }
 
+    override fun onPause() {
+        super.onPause()
+        showBottomNavigationBar()
+    }
+
+    private fun hideBottomNavigationBar() {
+        val bottomNavigationView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation)
+        bottomNavigationView.visibility = View.GONE
+        val bottomNavigationExpertView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation_owner)
+        bottomNavigationExpertView.visibility = View.GONE
+    }
+
+    private fun showBottomNavigationBar() {
+        if( getUserType().equals("Regular") ) {
+            val bottomNavigationView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation)
+            bottomNavigationView.visibility = View.VISIBLE
+        }else{
+            val bottomNavigationExpertView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation_owner)
+            bottomNavigationExpertView.visibility = View.VISIBLE
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseFirestore = FirebaseFirestore.getInstance()
@@ -120,9 +162,9 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
         textMenu = rootView.findViewById(R.id.description_edittext)
         foodType = rootView.findViewById(R.id.date_edittext)
         map_edittext = rootView.findViewById(R.id.map_edittext)
-        textReview = rootView.findViewById(R.id.review_edittext)
+        reviewEditText = rootView.findViewById(R.id.review_edittext)
         reviewTextView = rootView.findViewById(R.id.review_label)
-        saveEdits = rootView.findViewById(R.id.save_button)
+        saveButton = rootView.findViewById(R.id.save_button)
         deleteButton = rootView.findViewById(R.id.delete_button)
         imageView = rootView.findViewById(R.id.restaurantImage)
 
@@ -150,44 +192,102 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
 
         }
 
-        saveEdits.setOnClickListener {
+        saveButton.setOnClickListener {
             val newRestaurantName = restaurantNameEditText.text.toString()
             val newMenu = textMenu.text.toString()
             val newFoodType = foodType.text.toString()
             val user = mAuth.currentUser
-            var newOwnerName = "";
+            var userName = "";
             user?.let {
-                newOwnerName = user.displayName.toString()
+                userName = user.displayName.toString()
             }
-            val newReview = reviewTextView.text.toString() + "\n" + newOwnerName+":" +textReview.text.toString()
-            selectedImageUri?.let { uri ->
-                val storageRef = FirebaseStorage.getInstance().getReference().child("restaurant_images/${newRestaurantName}")
-                storageRef.putFile(uri)
-                    .addOnSuccessListener { taskSnapshot ->
-                        storageRef.downloadUrl.addOnSuccessListener { imageUrl ->
-                            currentRestaurant.imageUrl = imageUrl.toString()
-                            firebaseFirestore.collection("Restaurants").document(currentRestaurant.key.toString())
-                                .update("name", newRestaurantName, "description", newMenu,"imageUrl", imageUrl.toString(),"latitude", selectedLocation!!.latitude,"longitude", selectedLocation!!.longitude,"address", newFoodType, "foodtype", newFoodType, "review", newReview, "favourite", isFavorite)
+            val regex = Regex("$userName:.*")
+            val existingText = reviewTextView.text.toString()
+            var newReview  = reviewEditText.text.toString()
+            if (newReview.isEmpty()){
+                newReview = existingText
+            }else{
+                newReview = if (existingText.contains(regex)) {
+                    existingText.replace(regex, "$userName: $newReview")
+                } else {
+                    "$existingText\n$userName: $newReview"
+                }
+            }
+            if(selectedImageUri == null){
+                val latitude1 = if (selectedLocation != null) selectedLocation!!.latitude else currentRestaurant.latitude
+                val longitude1 = if (selectedLocation != null) selectedLocation!!.longitude else currentRestaurant.longitude
 
-                                .addOnSuccessListener {
-                                    currentRestaurant.apply {
-                                        name = newRestaurantName
-                                        menu = newMenu
-                                        address = map_edittext.text.toString()
-                                        foodtype = newFoodType
-                                        review = newReview
-                                        favourite = isFavorite
-                                    }
-                                    restaurantDao.update(currentRestaurant)
-                                    Toast.makeText(context, "Restaurant updated successfully", Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener { Toast.makeText(context, "Error updating restaurant", Toast.LENGTH_SHORT).show() }
-
-                            Toast.makeText(context, "Image updated successfully", Toast.LENGTH_SHORT).show()
-
+                firebaseFirestore.collection("Restaurants").document(currentRestaurant.key.toString())
+                    .update(
+                        "name", newRestaurantName,
+                        "description", newMenu,
+                        "imageUrl", currentRestaurant.imageUrl,
+                        "latitude", latitude1,
+                        "longitude",longitude1,
+                        "address", newFoodType,
+                        "foodtype", newFoodType,
+                        "review", newReview,
+                        "favourite", isFavorite)
+                    .addOnSuccessListener {
+                        currentRestaurant.apply {
+                            name = newRestaurantName
+                            menu = newMenu
+                            address = map_edittext.text.toString()
+                            foodtype = newFoodType
+                            review = newReview
+                            imageUrl = currentRestaurant.imageUrl
+                            favourite = isFavorite
                         }
+                        restaurantDao.update(currentRestaurant)
+                        Toast.makeText(context, "Restaurant updated successfully", Toast.LENGTH_SHORT).show()
+                        NavHostFragment.findNavController(this).popBackStack()
                     }
-                    .addOnFailureListener { Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show() }
+                    .addOnFailureListener { Toast.makeText(context, "Error updating restaurant", Toast.LENGTH_SHORT).show() }
+
+            }else{
+                selectedImageUri?.let { uri ->
+                    val storageRef = FirebaseStorage.getInstance().getReference().child("restaurant_images/${newRestaurantName}")
+                    storageRef.putFile(uri)
+                        .addOnSuccessListener { taskSnapshot ->
+                            storageRef.downloadUrl.addOnSuccessListener { url ->
+                                currentRestaurant.imageUrl = url.toString()
+                                val latitude = if (selectedLocation != null) selectedLocation!!.latitude else currentRestaurant.latitude
+                                val longitude = if (selectedLocation != null) selectedLocation!!.longitude else currentRestaurant.longitude
+
+                                firebaseFirestore.collection("Restaurants").document(currentRestaurant.key.toString())
+                                    .update(
+                                        "name", newRestaurantName,
+                                        "description", newMenu,
+                                        "imageUrl", url.toString(),
+                                        "latitude", latitude,
+                                        "longitude", longitude,
+                                        "address", newFoodType,
+                                        "foodtype", newFoodType,
+                                        "review", newReview,
+                                        "favourite", isFavorite)
+                                    .addOnSuccessListener {
+                                        currentRestaurant.apply {
+                                            name = newRestaurantName
+                                            menu = newMenu
+                                            address = map_edittext.text.toString()
+                                            foodtype = newFoodType
+                                            review = newReview
+                                            imageUrl = uri.toString()
+                                            favourite = isFavorite
+                                        }
+                                        restaurantDao.update(currentRestaurant)
+                                        Toast.makeText(context, "Restaurant updated successfully", Toast.LENGTH_SHORT).show()
+                                        NavHostFragment.findNavController(this).popBackStack()
+                                    }
+                                    .addOnFailureListener { Toast.makeText(context, "Error updating restaurant", Toast.LENGTH_SHORT).show() }
+
+                                Toast.makeText(context, "Image updated successfully", Toast.LENGTH_SHORT).show()
+
+                            }
+                        }
+                        .addOnFailureListener { Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show() }
+                }
+
             }
 
         }
@@ -243,7 +343,6 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
         val userEmail = bundle.getString("userEmail")?: ""
         val name = bundle.getString("name")?: ""
         val imageUrl = bundle.getString("imageUrl")?: ""
-        selectedImageUri  =  Uri.parse(imageUrl)
         val menu = bundle.getString("menu")?: ""
         val latitude = bundle.getDouble("latitude")
         val longitude = bundle.getDouble("longitude")
@@ -253,7 +352,6 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
         isFavorite = bundle.getBoolean("favourite") ?: false
 
         currentRestaurant =
-
             RestaurantModel(
                 key =  restaurantId!!,
                 userEmail =userEmail!!,
@@ -276,8 +374,6 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
             restaurantNameEditText.isEnabled = false
             textMenu.isEnabled = false
             foodType.isEnabled = false
-            textReview.isEnabled = false
-            saveEdits.visibility = View.GONE
             deleteButton.visibility = View.GONE
             imageView.isEnabled = false
         }else{

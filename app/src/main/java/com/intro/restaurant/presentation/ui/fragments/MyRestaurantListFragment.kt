@@ -22,7 +22,7 @@ import com.intro.restaurant.data.db.MyDatabse
 import com.intro.restaurant.data.model.RestaurantViewModel
 import com.intro.restaurant.data.model.RestaurantViewModelFactory
 
-class RestaurantListFragment : Fragment() {
+class MyRestaurantListFragment : Fragment() {
     private lateinit var viewModel: RestaurantViewModel
     private lateinit var recyclerView: RecyclerView
 
@@ -37,15 +37,14 @@ class RestaurantListFragment : Fragment() {
         recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView).apply {
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(context, 1)
-            adapter = RestaurantsAdapter(requireActivity(), mutableListOf(), false)
+            adapter = RestaurantsAdapter(requireActivity(), mutableListOf(), true)
         }
 
         rootView.findViewById<Button>(R.id.add_button).setOnClickListener {
             NavHostFragment.findNavController(this)
-                .navigate(R.id.action_restaurantListFragment_to_addRestaurantFragment)
+                .navigate(R.id.action_myRestaurantListFragment_to_addRestaurantFragment)
         }
-        val addButton: Button = rootView.findViewById(R.id.add_button)
-        addButton.visibility = View.GONE
+
         rootView.findViewById<TextView>(R.id.titleTextView).text = getString(R.string.restaurants)
 
     }
@@ -62,7 +61,7 @@ class RestaurantListFragment : Fragment() {
 
         if (isOnline()) {
             FirebaseAuth.getInstance().currentUser?.email?.let {
-                viewModel.fetchRestaurantsFromFirestore(
+                viewModel.fetchMyRestaurantsFromFirestore(
                     it
                 )
             }

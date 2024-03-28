@@ -106,6 +106,7 @@
 
             <TextView
                 android:id="@+id/map_label"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Select Address"
@@ -114,6 +115,7 @@
 
             <EditText
                 android:id="@+id/map_edittext"
+                android:editable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Select Address"
@@ -133,12 +135,23 @@
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"  />
-
+            <TextView android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reviews:"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp"/>
             <TextView
                 android:id="@+id/review_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Review"
+                android:textColor="@color/black"
+                android:paddingBottom="8dp"/>
+            <TextView android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Review:"
                 android:textColor="@color/black"
                 android:paddingBottom="8dp"/>
             <EditText

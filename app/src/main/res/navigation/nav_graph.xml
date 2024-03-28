@@ -16,6 +16,19 @@
             app:destination="@id/addRestaurantFragment" />
     </fragment>
 
+
+    <fragment
+        android:id="@+id/myRestaurantListFragment"
+        android:name="com.intro.restaurant.presentation.ui.fragments.MyRestaurantListFragment"
+        android:label="MyRestaurantListFragment" >
+        <action
+            android:id="@+id/action_myRestaurantListFragment_to_restaurantPageFragment"
+            app:destination="@id/restaurantDetailFragment" />
+        <action
+            android:id="@+id/action_myRestaurantListFragment_to_addRestaurantFragment"
+            app:destination="@id/addRestaurantFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/restaurantDetailFragment"
         android:name="com.intro.restaurant.presentation.ui.fragments.RestaurantDetailFragment"
@@ -36,14 +49,14 @@
     </fragment>
 
     <fragment
-        android:id="@+id/myRestaurantListFragment"
+        android:id="@+id/favoriteRestaurantListFragment"
         android:name="com.intro.restaurant.presentation.ui.fragments.FavoriteListFragment"
-        android:label="MyRestaurantListFragment" >
+        android:label="FavoriteRestaurantListFragment" >
         <action
-            android:id="@+id/action_myRestaurantListFragment_to_restaurantPageFragment"
+            android:id="@+id/action_favoriteRestaurantListFragment_to_restaurantPageFragment"
             app:destination="@id/restaurantDetailFragment" />
         <action
-            android:id="@+id/action_myRestaurantListFragment_to_addRestaurantFragment"
+            android:id="@+id/action_favoriteRestaurantListFragment_to_addRestaurantFragment"
             app:destination="@id/addRestaurantFragment" />
     </fragment>
 

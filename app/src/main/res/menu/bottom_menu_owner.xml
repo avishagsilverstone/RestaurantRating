@@ -2,14 +2,13 @@
 
     <item
         android:id="@+id/restaurantListFragment"
-        android:title="Restaurants"
-        android:icon="@android:drawable/ic_menu_search" />
+        android:title="Home"
+        android:icon="@android:drawable/ic_menu_share" />
 
     <item
-        android:id="@+id/favoriteRestaurantListFragment"
-        android:title="Favorites"
-        android:icon="@android:drawable/star_big_on" />
-
+        android:id="@+id/myRestaurantListFragment"
+        android:title="My Restaurants"
+        android:icon="@android:drawable/ic_menu_edit" />
 
     <item
         android:id="@+id/mapsFragment"
@@ -19,7 +18,7 @@
     <item
         android:id="@+id/newsFragment"
         android:title="News Info"
-        android:icon="@android:drawable/ic_dialog_info" />
+        android:icon="@android:drawable/ic_menu_gallery" />
 
     <item
         android:id="@+id/profileFragment"

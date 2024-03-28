@@ -25,6 +25,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -32,7 +33,9 @@ import com.google.firebase.storage.StorageReference
 import com.intro.restaurant.R
 import com.intro.restaurant.data.db.MyDatabse
 import com.intro.restaurant.data.model.RestaurantModel
+import com.intro.restaurant.presentation.ui.LoginActivity
 import com.squareup.picasso.Picasso
+import me.ibrahimsn.lib.SmoothBottomBar
 
 class AddRestaurantFragment : Fragment(), OnMapReadyCallback {
     private lateinit var restaurantTitleEditText: EditText
@@ -93,11 +96,38 @@ class AddRestaurantFragment : Fragment(), OnMapReadyCallback {
                     selectedLocation = LatLng(latitude, longitude)
                     map.clear()
                     map.addMarker(MarkerOptions().position(selectedLocation!!).title(address))
+
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation!!, 15f))
                 }
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 val status = Autocomplete.getStatusFromIntent(data!!)
             }
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        hideBottomNavigationBar()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        showBottomNavigationBar()
+    }
+
+    private fun hideBottomNavigationBar() {
+        val bottomNavigationView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation)
+        bottomNavigationView.visibility = View.GONE
+        val bottomNavigationExpertView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation_owner)
+        bottomNavigationExpertView.visibility = View.GONE
+    }
+
+    private fun showBottomNavigationBar() {
+        if( LoginActivity.getUserType().equals("Regular") ) {
+            val bottomNavigationView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation)
+            bottomNavigationView.visibility = View.VISIBLE
+        }else{
+            val bottomNavigationExpertView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottom_navigation_owner)
+            bottomNavigationExpertView.visibility = View.VISIBLE
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -205,6 +235,7 @@ class AddRestaurantFragment : Fragment(), OnMapReadyCallback {
                                         false
                                     )
                                 )
+                                NavHostFragment.findNavController(this).popBackStack()
                             }
                             .addOnFailureListener { e ->
                                 progressDialog.dismiss()

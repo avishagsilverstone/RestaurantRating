@@ -13,55 +13,44 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <ImageView
-            android:id="@+id/profile_image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_profile"
-            android:scaleType="centerCrop"
-            android:background="@drawable/bg_rounded_cardview"/>
-        <TextView
-            android:layout_marginTop="20dp"
+        <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name: "/>
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:background="@color/quantum_googred"
+            app:cardBackgroundColor="#92579C"
+            app:cardCornerRadius="15dp">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/bg_rounded_cardview"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_profile" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:text="User Name: " />
+
         <EditText
             android:id="@+id/profile_name_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/edit_text_bg_rounded"
             android:hint="Enter Name"
+            android:maxLines="1"
             android:padding="12dp"
             android:textAlignment="center"
-            android:textSize="16sp"
-            android:maxLines="1"/>
+            android:textSize="16sp" />
 
-        <RadioGroup
-            android:id="@+id/radioGroupUserType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/regular_radio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Regular"
-                android:textSize="16sp"
-                android:textColor="@color/black"/>
-
-            <RadioButton
-                android:id="@+id/owner_radio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Restaurant Owner"
-                android:textSize="16sp"
-                android:textColor="@color/black"/>
-        </RadioGroup>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/edit_profile_name_button"
@@ -69,9 +58,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Save"
-            app:cornerRadius="8dp"
+            android:textSize="20dp"
+            android:textColor="@android:color/white"
             app:backgroundTint="@color/colorPrimary"
-            android:textColor="@android:color/white"/>
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 
