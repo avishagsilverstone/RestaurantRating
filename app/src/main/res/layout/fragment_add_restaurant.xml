@@ -18,7 +18,7 @@
             app:cardCornerRadius="15dp">
 
             <ImageView
-                android:id="@+id/problemImage"
+                android:id="@+id/restaurantImage"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:src="@drawable/restaurant" />
@@ -32,7 +32,7 @@
             app:cardCornerRadius="15dp">
 
             <LinearLayout
-                android:id="@+id/problemDescriptionLayout"
+                android:id="@+id/restaurantDescriptionLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -57,14 +57,14 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Description"
+                    android:text="Menu"
                     android:textSize="16sp" />
 
                 <EditText
-                    android:id="@+id/problemdescription_textview"
+                    android:id="@+id/restaurantdescription_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter Description"
+                    android:hint="Enter Menu"
                     android:textSize="16sp"
                     android:background="@drawable/edit_text_bg_rounded"
                     android:padding="10dp"
@@ -73,34 +73,18 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Date Started"
+                    android:text="Food type"
                     android:textSize="16sp" />
 
                 <EditText
                     android:id="@+id/date_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Select Date Started"
+                    android:hint="Enter Food Type"
                     android:textSize="16sp"
                     android:background="@drawable/edit_text_bg_rounded"
                     android:padding="10dp"
                     android:layout_marginBottom="10dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Age of Restaurant"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/age_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Enter Age of Restaurant"
-                    android:textSize="16sp"
-                    android:background="@drawable/edit_text_bg_rounded"
-                    android:padding="10dp"
-                    android:layout_marginBottom="16dp" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -110,6 +94,7 @@
 
                 <EditText
                     android:id="@+id/map_edittext"
+                    android:editable="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Select Address"
@@ -117,7 +102,11 @@
                     android:background="@drawable/edit_text_bg_rounded"
                     android:padding="10dp"
                     android:layout_marginBottom="16dp" />
-
+                <fragment
+                    android:id="@+id/mapsFragment"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"  />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

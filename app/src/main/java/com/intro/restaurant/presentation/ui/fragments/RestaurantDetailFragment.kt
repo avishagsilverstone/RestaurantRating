@@ -1,14 +1,15 @@
 package com.intro.restaurant.presentation.ui.fragments
 
-import android.app.DatePickerDialog
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -30,12 +31,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.FirebaseAuth
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
-class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDialog.OnDateSetListener {
+class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
     private lateinit var map: GoogleMap
     private lateinit var firebaseFirestore: FirebaseFirestore
     private lateinit var myDB: MyDatabse
@@ -43,34 +45,38 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDial
     private lateinit var currentRestaurant: RestaurantModel
     private lateinit var imageView: ImageView
     private lateinit var restaurantNameEditText: EditText
-    private lateinit var textRestaurantDescription: EditText
-    private lateinit var textDateStarted: EditText
-    private lateinit var textAgeOfRestaurant: EditText
-    private lateinit var textSuggestion: EditText
-    private lateinit var suggestionTextView: TextView
+    private lateinit var favoriteButton: ImageButton
+    private lateinit var textMenu: EditText
+    private lateinit var foodType: EditText
+    private lateinit var map_edittext: EditText
+    private lateinit var textReview: EditText
+    private lateinit var reviewTextView: TextView
     private lateinit var saveEdits: Button
     private lateinit var deleteButton: Button
     private var selectedImageUri: Uri? = null
     private var selectedLocation: LatLng? = null
     private lateinit var mAuth: FirebaseAuth
-    companion object {
-        private const val REQUEST_CODE_GALLERY = 1
-    }
+    private var isFavorite: Boolean = false
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
         val bundle = arguments
         bundle?.let {
             setCurrentRestaurant(bundle)
-            restaurantNameEditText.setText(currentRestaurant.title)
-            textAgeOfRestaurant.setText(currentRestaurant.ageOfRestaurant)
-            suggestionTextView.setText(currentRestaurant.suggestion)
-            suggestionTextView.setText(currentRestaurant.expertName)
-            textDateStarted.setText(currentRestaurant.dateStarted)
-            textRestaurantDescription.setText(currentRestaurant.description)
+
+            if (isFavorite) {
+                favoriteButton.setImageResource(R.drawable.heart)
+            } else {
+                favoriteButton.setImageResource(R.drawable.heart_empty)
+            }
+            restaurantNameEditText.setText(currentRestaurant.name)
+            reviewTextView.setText(currentRestaurant.review)
+            foodType.setText(currentRestaurant.foodtype)
+            map_edittext.setText(currentRestaurant.address)
+            textMenu.setText(currentRestaurant.menu)
             Picasso.get().load(currentRestaurant.imageUrl).into(imageView)
             val hotelPosition = LatLng(currentRestaurant.latitude, currentRestaurant.longitude)
-            val marker = map.addMarker(MarkerOptions().position(hotelPosition).title(currentRestaurant.title).snippet(currentRestaurant.key))
+            val marker = map.addMarker(MarkerOptions().position(hotelPosition).title(currentRestaurant.name).snippet(currentRestaurant.key))
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(hotelPosition, 15f))
         }
     }
@@ -91,7 +97,7 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDial
         firebaseFirestore = FirebaseFirestore.getInstance()
         myDB = Room.databaseBuilder(requireContext().applicationContext,
             MyDatabse::class.java, "restaurant_database").allowMainThreadQueries().build()
-        restaurantDao = myDB.restaurantProblemDao()
+        restaurantDao = myDB.restaurantDao()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -101,6 +107,7 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDial
                 findNavController().popBackStack()
             }
         }
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapsFragment) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback1)
@@ -110,30 +117,49 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDial
         val rootView = inflater.inflate(R.layout.fragment_restaurant_detail, container, false)
         mAuth = FirebaseAuth.getInstance()
         restaurantNameEditText = rootView.findViewById(R.id.name_edittext)
-        textRestaurantDescription = rootView.findViewById(R.id.description_edittext)
-        textDateStarted = rootView.findViewById(R.id.date_edittext)
-        textAgeOfRestaurant = rootView.findViewById(R.id.age_edittext)
-        textSuggestion = rootView.findViewById(R.id.suggestion_edittext)
-        suggestionTextView = rootView.findViewById(R.id.suggestion_label)
+        textMenu = rootView.findViewById(R.id.description_edittext)
+        foodType = rootView.findViewById(R.id.date_edittext)
+        map_edittext = rootView.findViewById(R.id.map_edittext)
+        textReview = rootView.findViewById(R.id.review_edittext)
+        reviewTextView = rootView.findViewById(R.id.review_label)
         saveEdits = rootView.findViewById(R.id.save_button)
         deleteButton = rootView.findViewById(R.id.delete_button)
         imageView = rootView.findViewById(R.id.restaurantImage)
 
         imageView.setOnClickListener { openGallery() }
-        textDateStarted.setOnClickListener {
-            showDatePickerDialog()
+        favoriteButton = rootView.findViewById(R.id.favorite_button)
+        favoriteButton.setOnClickListener {
+            isFavorite = !isFavorite
+            val favoriteButton: ImageButton = rootView.findViewById(R.id.favorite_button)
+            if (isFavorite) {
+                favoriteButton.setImageResource(R.drawable.heart)
+            } else {
+                favoriteButton.setImageResource(R.drawable.heart_empty)
+            }
+            firebaseFirestore.collection("Restaurants").document(currentRestaurant.key.toString())
+                .update("favourite", isFavorite)
+
+                .addOnSuccessListener {
+                    currentRestaurant.apply {
+                        favourite = isFavorite
+                    }
+                    restaurantDao.update(currentRestaurant)
+                    Toast.makeText(context, "Restaurant updated successfully", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { Toast.makeText(context, "Error updating restaurant", Toast.LENGTH_SHORT).show() }
+
         }
+
         saveEdits.setOnClickListener {
             val newRestaurantName = restaurantNameEditText.text.toString()
-            val newDescription = textRestaurantDescription.text.toString()
-            val newDateStarted = textDateStarted.text.toString()
-            val newAgeOfRestaurant = textAgeOfRestaurant.text.toString()
+            val newMenu = textMenu.text.toString()
+            val newFoodType = foodType.text.toString()
             val user = mAuth.currentUser
-            var newExpertName = "";
+            var newOwnerName = "";
             user?.let {
-                newExpertName = user.displayName.toString()
+                newOwnerName = user.displayName.toString()
             }
-            val newSuggestion = suggestionTextView.text.toString() + "\n" + newExpertName+":" +textSuggestion.text.toString()
+            val newReview = reviewTextView.text.toString() + "\n" + newOwnerName+":" +textReview.text.toString()
             selectedImageUri?.let { uri ->
                 val storageRef = FirebaseStorage.getInstance().getReference().child("restaurant_images/${newRestaurantName}")
                 storageRef.putFile(uri)
@@ -141,16 +167,16 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDial
                         storageRef.downloadUrl.addOnSuccessListener { imageUrl ->
                             currentRestaurant.imageUrl = imageUrl.toString()
                             firebaseFirestore.collection("Restaurants").document(currentRestaurant.key.toString())
-                                .update("name", newRestaurantName, "description", newDescription,"imageUrl", imageUrl.toString(),"latitude", selectedLocation!!.latitude,"longitude", selectedLocation!!.longitude,"dateStarted", newDateStarted, "ageOfRestaurant", newAgeOfRestaurant, "suggestion", newSuggestion, "expertName", newExpertName)
+                                .update("name", newRestaurantName, "description", newMenu,"imageUrl", imageUrl.toString(),"latitude", selectedLocation!!.latitude,"longitude", selectedLocation!!.longitude,"address", newFoodType, "foodtype", newFoodType, "review", newReview, "favourite", isFavorite)
 
                                 .addOnSuccessListener {
                                     currentRestaurant.apply {
-                                        title = newRestaurantName
-                                        description = newDescription
-                                        dateStarted = newDateStarted
-                                        ageOfRestaurant = newAgeOfRestaurant
-                                        suggestion = newSuggestion
-                                        expertName = newExpertName
+                                        name = newRestaurantName
+                                        menu = newMenu
+                                        address = map_edittext.text.toString()
+                                        foodtype = newFoodType
+                                        review = newReview
+                                        favourite = isFavorite
                                     }
                                     restaurantDao.update(currentRestaurant)
                                     Toast.makeText(context, "Restaurant updated successfully", Toast.LENGTH_SHORT).show()
@@ -181,22 +207,32 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDial
 
         return rootView
     }
-    private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePickerDialog = DatePickerDialog(requireContext(), this, year, month, dayOfMonth)
-        datePickerDialog.show()
+    private fun selectAddress() {
+        val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS)
+        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+            .build(requireContext())
+        startActivityForResult(intent, 11)
     }
-    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        val selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month)
-            set(Calendar.DAY_OF_MONTH, dayOfMonth)
-        }.time)
-        textDateStarted.setText(selectedDate)
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 11) {
+            if (resultCode == Activity.RESULT_OK) {
+                val place = Autocomplete.getPlaceFromIntent(data!!)
+                val address = place.address
+                map_edittext.setText(address)
+                val latitude = place.latLng?.latitude
+                val longitude = place.latLng?.longitude
+                if (latitude != null && longitude != null) {
+                    selectedLocation = LatLng(latitude, longitude)
+                    map.clear()
+                    map.addMarker(MarkerOptions().position(selectedLocation!!).title(address))
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation!!, 15f))
+                }
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                val status = Autocomplete.getStatusFromIntent(data!!)
+            }
+        }
     }
     private fun openGallery() {
         imagePickerLauncher.launch("image/*")
@@ -205,40 +241,49 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback , DatePickerDial
     private fun setCurrentRestaurant(bundle: Bundle) {
         val restaurantId = bundle.getString("restaurantId")?: ""
         val userEmail = bundle.getString("userEmail")?: ""
-        val restaurantName = bundle.getString("restaurantName")?: ""
+        val name = bundle.getString("name")?: ""
         val imageUrl = bundle.getString("imageUrl")?: ""
         selectedImageUri  =  Uri.parse(imageUrl)
-        val description = bundle.getString("description")?: ""
+        val menu = bundle.getString("menu")?: ""
         val latitude = bundle.getDouble("latitude")
         val longitude = bundle.getDouble("longitude")
-        val dateStarted = bundle.getString("dateStarted")?: ""
-        val ageOfRestaurant = bundle.getString("ageOfRestaurant")?: ""
-        val suggestion = bundle.getString("suggestion")?: ""
-        val expertName = bundle.getString("expertName") ?: ""
+        val address = bundle.getString("address")?: ""
+        val foodtype = bundle.getString("foodtype")?: ""
+        val review = bundle.getString("review")?: ""
+        isFavorite = bundle.getBoolean("favourite") ?: false
 
-        currentRestaurant = RestaurantModel(restaurantId!!, userEmail!!,  imageUrl!!, restaurantName!!, description!!, latitude, longitude, dateStarted!!, ageOfRestaurant!!, suggestion, expertName)
+        currentRestaurant =
+
+            RestaurantModel(
+                key =  restaurantId!!,
+                userEmail =userEmail!!,
+                imageUrl =imageUrl!!,
+                name =name!!,
+                menu =menu!!,
+                latitude =latitude,
+                longitude =longitude,
+                address =address!!,
+                foodtype =foodtype!!,
+                review =review,
+                favourite =isFavorite)
         if (latitude != 0.0 && longitude != 0.0) {
             val restaurantPosition = LatLng(latitude, longitude)
-            val marker = map.addMarker(MarkerOptions().position(restaurantPosition).title(restaurantName).snippet(restaurantId))
+            val marker = map.addMarker(MarkerOptions().position(restaurantPosition).title(name).snippet(restaurantId))
 
         }
         val isEdit = bundle.getBoolean("isEdit")
         if (!isEdit) {
             restaurantNameEditText.isEnabled = false
-            textRestaurantDescription.isEnabled = false
-            textDateStarted.isEnabled = false
-            textAgeOfRestaurant.isEnabled = false
-            textSuggestion.isEnabled = false
+            textMenu.isEnabled = false
+            foodType.isEnabled = false
+            textReview.isEnabled = false
             saveEdits.visibility = View.GONE
             deleteButton.visibility = View.GONE
             imageView.isEnabled = false
         }else{
-            suggestionTextView.visibility = View.GONE
-            map.setOnMapClickListener { latLng ->
-                selectedLocation = latLng
-                map.clear()
-                map.addMarker(MarkerOptions().position(latLng))
-            }
+            map_edittext.setOnClickListener { selectAddress() }
+            reviewTextView.visibility = View.GONE
+
         }
     }
 

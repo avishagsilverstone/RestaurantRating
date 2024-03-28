@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.intro.restaurant.R
 
 class RestaurantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    val cardView: CardView = itemView.findViewById(R.id.cardView)
-    val problemImage: ImageView = itemView.findViewById(R.id.restaurantImage)
-    val problemName: TextView = itemView.findViewById(R.id.name)
+    val restaurantImage: ImageView = itemView.findViewById(R.id.restaurantImage)
+    val restaurantName: TextView = itemView.findViewById(R.id.name)
 }

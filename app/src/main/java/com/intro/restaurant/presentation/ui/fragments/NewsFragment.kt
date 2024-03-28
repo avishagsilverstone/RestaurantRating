@@ -3,6 +3,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,9 +37,9 @@ class NewsFragment : Fragment() {
     }
 
     private fun fetchNews() {
-        val country = "iq"
-        val apiKey = "647f0c864ea54fc8bdc2c025b1587910"
-
+        val country = "us"
+        var apiKey = "647f0c864ea54fc8bdc2c025b1587910"
+        apiKey = "994fb4a96cc04ce0a5cb0ce90063a67d"
         RetrofitClient.instance.getTopHeadlines(country, apiKey).enqueue(object : Callback<NewsResponse> {
             override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
                 if (response.isSuccessful) {

@@ -41,30 +41,36 @@ class MapFragment : Fragment() {
         return view
     }
 
-
-
-
-
-
     private fun setupMapListeners() {
         map.setOnMarkerClickListener { marker ->
             val bundle = Bundle()
             val document = marker.tag as? QueryDocumentSnapshot
             document?.let {
                 val restaurantId = document.id
-                val restaurantName = document.getString("restaurantName") ?: ""
+                val name = document.getString("name") ?: ""
                 val userEmail = document.getString("userEmail") ?: ""
                 val imageUrl = document.getString("imageUrl") ?: ""
-                val description = document.getString("description") ?: ""
+                val menu = document.getString("menu") ?: ""
                 val latitude = document.getDouble("latitude") ?: 0.0
                 val longitude = document.getDouble("longitude") ?: 0.0
+
+
+                val address = document.getString("address") ?: ""
+                val foodtype = document.getString("foodtype") ?: ""
+                val review = document.getString("review") ?: ""
+                val favourite = document.getBoolean("favourite") ?: false
                 bundle.putString("restaurantId", restaurantId)
-                bundle.putString("restaurantName", restaurantName)
+                bundle.putString("name", name)
                 bundle.putString("userEmail", userEmail)
                 bundle.putString("imageUrl", imageUrl)
-                bundle.putString("description", description)
+                bundle.putString("menu", menu)
                 bundle.putDouble("latitude", latitude)
                 bundle.putDouble("longitude", longitude)
+
+                bundle.putString("address", address)
+                bundle.putString("foodtype", foodtype)
+                bundle.putString("review", review)
+                bundle.putBoolean("favourite", favourite)
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_mapsFragment_to_restaurantPageFragment, bundle)
             }
@@ -80,13 +86,16 @@ class MapFragment : Fragment() {
                 try {
                     for (document in task.result!!) {
                         val restaurantId = document.id
-                        val restaurantName = document.getString("restaurantName") ?: ""
+                        val name = document.getString("name") ?: ""
                         val latitude = document.getDouble("latitude") ?: 0.0
                         val longitude = document.getDouble("longitude") ?: 0.0
 
+
+
+
                         if (latitude != 0.0 && longitude != 0.0) {
                             val restaurantPosition = LatLng(latitude, longitude)
-                            val marker = map.addMarker(MarkerOptions().position(restaurantPosition).title(restaurantName).snippet(restaurantId))
+                            val marker = map.addMarker(MarkerOptions().position(restaurantPosition).title(name).snippet(restaurantId))
                             marker?.tag = document
                         }
                     }

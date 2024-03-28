@@ -55,10 +55,10 @@
                 android:textColor="@color/black"/>
 
             <RadioButton
-                android:id="@+id/expert_radio"
+                android:id="@+id/owner_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Expert"
+                android:text="Restaurant Owner"
                 android:textSize="16sp"
                 android:textColor="@color/black"/>
         </RadioGroup>

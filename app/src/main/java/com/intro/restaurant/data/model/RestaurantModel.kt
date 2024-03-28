@@ -3,34 +3,34 @@ package com.intro.restaurant.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "RestaurantProblem")
+@Entity(tableName = "Restaurant")
 data class RestaurantModel(
         @PrimaryKey(autoGenerate = true) var id: Int = 0,
         var key: String? = null,
         var userEmail: String,
         var imageUrl: String,
-        var title: String,
-        var description: String,
+        var name: String,
+        var menu: String,
         var latitude: Double,
         var longitude: Double,
-        var dateStarted: String,
-        var ageOfRestaurant: String,
-        var suggestion: String? = null,
-        var expertName: String? = null // ExpertName field 추가
+        var address: String,
+        var foodtype: String,
+        var review: String? = null,
+        var favourite: Boolean = false
 ) {
 
         constructor(
                 key: String,
                 userEmail: String,
                 imageUrl: String,
-                title: String,
-                description: String,
+                name: String,
+                menu: String,
                 latitude: Double,
                 longitude: Double,
-                dateStarted: String,
-                ageOfRestaurant: String,
-                suggestion: String? = null,
-                expertName: String? = null
-        ) : this(0, key, userEmail, imageUrl,title,  description, latitude, longitude, dateStarted, ageOfRestaurant, suggestion, expertName)
+                address: String,
+                foodtype: String,
+                review: String? = null,
+                favourite: Boolean = false
+        ) : this(0, key, userEmail, imageUrl,name,  menu, latitude, longitude, address, foodtype, review, favourite)
 }
 

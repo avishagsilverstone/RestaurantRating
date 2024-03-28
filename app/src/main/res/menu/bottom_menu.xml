@@ -2,13 +2,14 @@
 
     <item
         android:id="@+id/restaurantListFragment"
-        android:title="Home"
-        android:icon="@android:drawable/ic_menu_share" />
+        android:title="Restaurants"
+        android:icon="@android:drawable/ic_menu_search" />
 
     <item
         android:id="@+id/myRestaurantListFragment"
-        android:title="My Posts"
-        android:icon="@android:drawable/ic_menu_edit" />
+        android:title="Favorites"
+        android:icon="@android:drawable/star_big_on" />
+
 
     <item
         android:id="@+id/mapsFragment"
@@ -16,9 +17,9 @@
         android:icon="@android:drawable/ic_menu_mapmode" />
 
     <item
-        android:id="@+id/restaurantFragment"
-        android:title="Restaurant Info"
-        android:icon="@android:drawable/ic_menu_gallery" />
+        android:id="@+id/newsFragment"
+        android:title="News Info"
+        android:icon="@android:drawable/ic_dialog_info" />
 
     <item
         android:id="@+id/profileFragment"

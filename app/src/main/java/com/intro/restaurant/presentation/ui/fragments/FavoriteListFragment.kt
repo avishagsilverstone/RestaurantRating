@@ -37,30 +37,28 @@ class FavoriteListFragment : Fragment() {
         recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView).apply {
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(context, 1)
-            adapter = RestaurantsAdapter(requireActivity(), mutableListOf(), true)
+            adapter = RestaurantsAdapter(requireActivity(), mutableListOf(), false)
         }
-        rootView.findViewById<Button>(R.id.add_button).setOnClickListener {
-            NavHostFragment.findNavController(this)
-                .navigate(R.id.action_myRestaurantListFragment_to_addRestaurantFragment)
-        }
+        val addButton: Button = rootView.findViewById(R.id.add_button)
+        addButton.visibility = View.GONE
 
-        rootView.findViewById<TextView>(R.id.titleTextView).text = getString(R.string.restaurants)
+        rootView.findViewById<TextView>(R.id.titleTextView).text = "Favorite Restaurants"
 
     }
 
     private fun setupViewModel() {
         val db = MyDatabse.getInstance(requireContext().applicationContext)
-        val factory = RestaurantViewModelFactory(db.restaurantProblemDao())
+        val factory = RestaurantViewModelFactory(db.restaurantDao())
         viewModel = ViewModelProvider(this, factory).get(RestaurantViewModel::class.java)
 
-        viewModel.allProblems.observe(viewLifecycleOwner, Observer { problems ->
-            (recyclerView.adapter as RestaurantsAdapter).problems = problems
+        viewModel.allRestaurants.observe(viewLifecycleOwner, Observer { restaurants ->
+            (recyclerView.adapter as RestaurantsAdapter).restaurants = restaurants
             recyclerView.adapter?.notifyDataSetChanged()
         })
 
         if (isOnline()) {
             FirebaseAuth.getInstance().currentUser?.email?.let {
-                viewModel.fetchMyProblemsForUserEmail(
+                viewModel.fetchFavouriteRestaurantsForUserEmail(
                     it
                 )
             }

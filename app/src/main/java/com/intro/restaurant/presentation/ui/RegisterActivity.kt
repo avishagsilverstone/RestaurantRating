@@ -70,7 +70,7 @@ class RegisterActivity : AppCompatActivity() {
         val radioGroupUserType = findViewById<RadioGroup>(R.id.radioGroupUserType)
         val userType = when (radioGroupUserType.checkedRadioButtonId) {
             R.id.regular_radio -> "Regular"
-            R.id.expert_radio -> "Expert"
+            R.id.owner_radio -> "Owner"
             else -> "Regular"
         }
 

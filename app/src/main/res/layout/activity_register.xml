@@ -90,11 +90,11 @@
                     android:text="Regular" />
 
                 <RadioButton
-                    android:id="@+id/expert_radio"
+                    android:id="@+id/owner_radio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/RadioButtonStyle"
-                    android:text="Expert" />
+                    android:text="Restaurant Owner" />
             </RadioGroup>
 
             <Button

@@ -10,14 +10,14 @@
         android:label="RestaurantListFragment" >
         <action
             android:id="@+id/action_restaurantListFragment_to_restaurantPageFragment"
-            app:destination="@id/restaurantPageFragment" />
+            app:destination="@id/restaurantDetailFragment" />
         <action
             android:id="@+id/action_restaurantListFragment_to_addRestaurantFragment"
             app:destination="@id/addRestaurantFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/restaurantPageFragment"
+        android:id="@+id/restaurantDetailFragment"
         android:name="com.intro.restaurant.presentation.ui.fragments.RestaurantDetailFragment"
         android:label="RestaurantPageFragment" />
 
@@ -32,7 +32,7 @@
         android:label="MapsFragment">
         <action
             android:id="@+id/action_mapsFragment_to_restaurantPageFragment"
-            app:destination="@id/restaurantPageFragment" />
+            app:destination="@id/restaurantDetailFragment" />
     </fragment>
 
     <fragment
@@ -41,14 +41,14 @@
         android:label="MyRestaurantListFragment" >
         <action
             android:id="@+id/action_myRestaurantListFragment_to_restaurantPageFragment"
-            app:destination="@id/restaurantPageFragment" />
+            app:destination="@id/restaurantDetailFragment" />
         <action
             android:id="@+id/action_myRestaurantListFragment_to_addRestaurantFragment"
             app:destination="@id/addRestaurantFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/restaurantFragment"
+        android:id="@+id/newsFragment"
         android:name="com.intro.restaurant.presentation.ui.fragments.NewsFragment"
         android:label="restaurantFragment" />
 

@@ -1,7 +1,6 @@
 package com.intro.restaurant.presentation.ui.fragments
 
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
@@ -10,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -35,18 +33,14 @@ import com.intro.restaurant.R
 import com.intro.restaurant.data.db.MyDatabse
 import com.intro.restaurant.data.model.RestaurantModel
 import com.squareup.picasso.Picasso
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
-class AddRestaurantFragment : Fragment(), OnMapReadyCallback , DatePickerDialog.OnDateSetListener{
-    private lateinit var problemTitleEditText: EditText
-    private lateinit var problemDescriptionEditText: EditText
-    private lateinit var problemImageView: ImageView
-    private lateinit var dateStartedEditText: EditText
-    private lateinit var ageOfRestaurantEditText: EditText
+class AddRestaurantFragment : Fragment(), OnMapReadyCallback {
+    private lateinit var restaurantTitleEditText: EditText
+    private lateinit var restaurantDescriptionEditText: EditText
+    private lateinit var restaurantImageView: ImageView
+    private lateinit var foodtypeEditText: EditText
     private lateinit var map_edittext: EditText
-    private lateinit var addProblemButton: Button
+    private lateinit var addRestaurantButton: Button
     private lateinit var cancelButton: Button
     private lateinit var map: GoogleMap
     private var selectedImageUri: Uri? = null
@@ -61,7 +55,7 @@ class AddRestaurantFragment : Fragment(), OnMapReadyCallback , DatePickerDialog.
         if (result != null) {
             try {
                 result?.let {
-                    Picasso.get().load(it).into(problemImageView, object : com.squareup.picasso.Callback {
+                    Picasso.get().load(it).into(restaurantImageView, object : com.squareup.picasso.Callback {
                         override fun onSuccess() {
                             selectedImageUri = it
                         }
@@ -125,13 +119,12 @@ class AddRestaurantFragment : Fragment(), OnMapReadyCallback , DatePickerDialog.
     }
 
     private fun initializeViews(rootView: View) {
-        problemTitleEditText = rootView.findViewById(R.id.restaurantname_textview)
-        problemDescriptionEditText = rootView.findViewById(R.id.problemdescription_textview)
-        problemImageView = rootView.findViewById(R.id.problemImage)
-        dateStartedEditText = rootView.findViewById(R.id.date_edittext)
-        ageOfRestaurantEditText = rootView.findViewById(R.id.age_edittext)
+        restaurantTitleEditText = rootView.findViewById(R.id.restaurantname_textview)
+        restaurantDescriptionEditText = rootView.findViewById(R.id.restaurantdescription_textview)
+        restaurantImageView = rootView.findViewById(R.id.restaurantImage)
+        foodtypeEditText = rootView.findViewById(R.id.date_edittext)
         map_edittext = rootView.findViewById(R.id.map_edittext)
-        addProblemButton = rootView.findViewById(R.id.add_button)
+        addRestaurantButton = rootView.findViewById(R.id.add_button)
         cancelButton = rootView.findViewById(R.id.cancel_button)
 
     }
@@ -142,29 +135,12 @@ class AddRestaurantFragment : Fragment(), OnMapReadyCallback , DatePickerDialog.
     }
 
     private fun setupListeners() {
-        problemImageView.setOnClickListener { selectImage() }
-        addProblemButton.setOnClickListener { uploadProblemData() }
+        restaurantImageView.setOnClickListener { selectImage() }
+        addRestaurantButton.setOnClickListener { uploadRestaurantData() }
         cancelButton.setOnClickListener { NavHostFragment.findNavController(this).popBackStack() }
         map_edittext.setOnClickListener { selectAddress() }
-        dateStartedEditText.setOnClickListener {   showDatePickerDialog()  }
     }
-    private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
-        val datePickerDialog = DatePickerDialog(requireContext(), this, year, month, dayOfMonth)
-        datePickerDialog.show()
-    }
-    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        val selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month)
-            set(Calendar.DAY_OF_MONTH, dayOfMonth)
-        }.time)
-        dateStartedEditText.setText(selectedDate)
-    }
     private fun selectImage() {
         imagePickerLauncher.launch("image/*")
     }
@@ -173,69 +149,66 @@ class AddRestaurantFragment : Fragment(), OnMapReadyCallback , DatePickerDialog.
         map = googleMap
     }
 
-    private fun uploadProblemData() {
+    private fun uploadRestaurantData() {
+        val name = restaurantTitleEditText.text.toString().trim()
+        val menu = restaurantDescriptionEditText.text.toString().trim()
+        val address = map_edittext.text.toString().trim()
+        val foodtype = foodtypeEditText.text.toString().trim()
 
-
-        val problemTitle = problemTitleEditText.text.toString().trim()
-        val problemDescription = problemDescriptionEditText.text.toString().trim()
-        val dateStarted = dateStartedEditText.text.toString().trim()
-        val ageOfRestaurant = ageOfRestaurantEditText.text.toString().trim()
-
-        if (problemTitle.isEmpty() || problemDescription.isEmpty() || selectedImageUri == null || selectedLocation == null || dateStarted.isEmpty() || ageOfRestaurant.isEmpty()) {
+        if (name.isEmpty() || menu.isEmpty() || selectedImageUri == null || selectedLocation == null || address.isEmpty() || foodtype.isEmpty()) {
             Toast.makeText(requireContext(), "All fields and location must be filled", Toast.LENGTH_SHORT).show()
             return
         }
         val progressDialog = ProgressDialog(requireContext())
-        progressDialog.setMessage("Adding problem...")
+        progressDialog.setMessage("Adding restaurant...")
         progressDialog.setCancelable(false)
         progressDialog.show()
         // First, upload the image to Firebase Storage
-        val imageRef: StorageReference = storage.reference.child("problem_images/${problemTitle}.jpg")
+        val imageRef: StorageReference = storage.reference.child("restaurant_images/${name}.jpg")
         imageRef.putFile(selectedImageUri!!)
             .addOnSuccessListener { taskSnapshot ->
                 imageRef.downloadUrl
                     .addOnSuccessListener { uri ->
-                        // Then, save problem data including the image URL to Firestore
-                        val problem = hashMapOf<String, Any>()
-                        problem["title"] = problemTitle
-                        problem["description"] = problemDescription
-                        problem["imageUrl"] = uri.toString()
-                        problem["latitude"] = selectedLocation!!.latitude
-                        problem["longitude"] = selectedLocation!!.longitude
-                        problem["userEmail"] = FirebaseAuth.getInstance().currentUser?.email!!
+                        // Then, save restaurant data including the image URL to Firestore
+                        val restaurant = hashMapOf<String, Any>()
+                        restaurant["name"] = name
+                        restaurant["menu"] = menu
+                        restaurant["imageUrl"] = uri.toString()
+                        restaurant["latitude"] = selectedLocation!!.latitude
+                        restaurant["longitude"] = selectedLocation!!.longitude
+                        restaurant["userEmail"] = FirebaseAuth.getInstance().currentUser?.email!!
+                        restaurant["address"] = address
+                        restaurant["foodtype"] = foodtype
+                        restaurant["review"] = ""
+                        restaurant["favourite"] = false
 
-                        problem["dateStarted"] = dateStarted
-                        problem["ageOfRestaurant"] = ageOfRestaurant
-                        problem["suggestion"] = ""
-                        problem["expertName"] = ""
-
-                        firestore.collection("Problems")
-                            .add(problem)
+                        firestore.collection("Restaurants")
+                            .add(restaurant)
                             .addOnSuccessListener { documentReference ->
                                 progressDialog.dismiss()
-                                Toast.makeText(requireContext(), "Problem added successfully", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "Restaurant added successfully", Toast.LENGTH_SHORT).show()
                                 NavHostFragment.findNavController(this).popBackStack()
 
-                                // Optionally, you can also save this problem data to Room database for offline access
-                                saveProblemToLocalDatabase(
+                                // Optionally, you can also save this restaurant data to Room database for offline access
+                                saveRestaurantToLocalDatabase(
                                     RestaurantModel(
                                         documentReference.id,
                                         FirebaseAuth.getInstance().currentUser?.email!!,
-                                        problemTitle,
                                         uri.toString(),
-                                        problemDescription,
+                                        name,
+                                        menu,
                                         selectedLocation!!.latitude,
                                         selectedLocation!!.longitude,
-                                        dateStarted,
-                                        ageOfRestaurant,
+                                        address,
+                                        foodtype,
                                         "",
-                                        ""
+                                        false
                                     )
                                 )
                             }
                             .addOnFailureListener { e ->
                                 progressDialog.dismiss()
-                                Toast.makeText(requireContext(), "Failed to add problem", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "Failed to add restaurant", Toast.LENGTH_SHORT).show()
                             }
                     }
             }
@@ -245,7 +218,7 @@ class AddRestaurantFragment : Fragment(), OnMapReadyCallback , DatePickerDialog.
             }
     }
 
-    private fun saveProblemToLocalDatabase(restaurantProblem: RestaurantModel) {
-        Thread { localDb.restaurantProblemDao().insert(restaurantProblem) }.start()
+    private fun saveRestaurantToLocalDatabase(restaurant: RestaurantModel) {
+        Thread { localDb.restaurantDao().insert(restaurant) }.start()
     }
 }

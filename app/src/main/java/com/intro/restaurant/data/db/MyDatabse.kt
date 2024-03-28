@@ -11,7 +11,7 @@ import com.intro.restaurant.data.model.RestaurantModel
 @Database(entities = [RestaurantModel::class], version = 4)
 abstract class MyDatabse : RoomDatabase() {
 
-    abstract fun restaurantProblemDao(): RestaurantDao
+    abstract fun restaurantDao(): RestaurantDao
 
     companion object {
         @Volatile
@@ -20,7 +20,7 @@ abstract class MyDatabse : RoomDatabase() {
         // Migration from version 3 to 4
         val migration3to4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE RestaurantProblem ADD COLUMN new_column_name TEXT DEFAULT ''")
+                database.execSQL("ALTER TABLE Restaurant ADD COLUMN new_column_name TEXT DEFAULT ''")
             }
         }
 

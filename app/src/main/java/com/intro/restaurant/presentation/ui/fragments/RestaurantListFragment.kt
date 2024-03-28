@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -38,8 +39,11 @@ class RestaurantListFragment : Fragment() {
             layoutManager = GridLayoutManager(context, 1)
             adapter = RestaurantsAdapter(requireActivity(), mutableListOf(), false)
         }
-        val addButton: Button = rootView.findViewById(R.id.add_button)
-        addButton.visibility = View.GONE
+
+        rootView.findViewById<Button>(R.id.add_button).setOnClickListener {
+            NavHostFragment.findNavController(this)
+                .navigate(R.id.action_restaurantListFragment_to_addRestaurantFragment)
+        }
 
         rootView.findViewById<TextView>(R.id.titleTextView).text = getString(R.string.restaurants)
 
@@ -47,17 +51,17 @@ class RestaurantListFragment : Fragment() {
 
     private fun setupViewModel() {
         val myDB = MyDatabse.getInstance(requireContext().applicationContext)
-        val factory = RestaurantViewModelFactory(myDB.restaurantProblemDao())
+        val factory = RestaurantViewModelFactory(myDB.restaurantDao())
         viewModel = ViewModelProvider(this, factory).get(RestaurantViewModel::class.java)
 
-        viewModel.allProblems.observe(viewLifecycleOwner, Observer { problems ->
-            (recyclerView.adapter as RestaurantsAdapter).problems = problems
+        viewModel.allRestaurants.observe(viewLifecycleOwner, Observer { restaurants ->
+            (recyclerView.adapter as RestaurantsAdapter).restaurants = restaurants
             recyclerView.adapter?.notifyDataSetChanged()
         })
 
         if (isOnline()) {
             FirebaseAuth.getInstance().currentUser?.email?.let {
-                viewModel.fetchProblemsFromFirestore(
+                viewModel.fetchRestaurantsFromFirestore(
                     it
                 )
             }

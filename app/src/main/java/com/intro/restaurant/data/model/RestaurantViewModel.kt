@@ -10,83 +10,83 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RestaurantViewModel(private val restaurantDao: RestaurantDao) : ViewModel() {
-    val allProblems: LiveData<List<RestaurantModel>> = restaurantDao.getAll()
+    val allRestaurants: LiveData<List<RestaurantModel>> = restaurantDao.getAll()
 
-    fun fetchProblemsFromFirestore(userEmail: String) {
+    fun fetchRestaurantsFromFirestore(userEmail: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val db = FirebaseFirestore.getInstance()
-            db.collection("Problems").whereNotEqualTo("userEmail", userEmail).get().addOnCompleteListener { task ->
+            db.collection("Restaurants").get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val problems = mutableListOf<RestaurantModel>() // List of problems to be fetched
+                    val restaurants = mutableListOf<RestaurantModel>() // List of restaurants to be fetched
 
                     for (document in task.result!!) {
                         val imageUrl = document.getString("imageUrl")
 
-                        val problem = RestaurantModel(
+                        val restaurant = RestaurantModel(
                             key = document.id,
                             userEmail = document.getString("userEmail") ?: "",
                             imageUrl = imageUrl ?: "",
-                            description = document.getString("description") ?: "",
+                            menu = document.getString("menu") ?: "",
                             latitude = document.getDouble("latitude") ?: 0.0,
                             longitude = document.getDouble("longitude") ?: 0.0,
-                            title = document.getString("title") ?: "",
-                            dateStarted = document.getString("dateStarted") ?: "",
-                            ageOfRestaurant = document.getString("ageOfRestaurant") ?: "",
-                            suggestion = document.getString("suggestion") ?: "",
-                            expertName = document.getString("expertName") ?: ""
+                            name = document.getString("name") ?: "",
+                            address = document.getString("address") ?: "",
+                            foodtype = document.getString("foodtype") ?: "",
+                            review = document.getString("review") ?: "",
+                            favourite = document.getBoolean("favourite") ?: false
                         )
-                        problems.add(problem)
+                        restaurants.add(restaurant)
                     }
 
-                    // Insert problems into database within IO scope
+                    // Insert restaurants into database within IO scope
                     CoroutineScope(Dispatchers.IO).launch {
                         restaurantDao.deleteAll()
-                        restaurantDao.insertAll(problems)
+                        restaurantDao.insertAll(restaurants)
                     }.invokeOnCompletion {
                         // Do something after insertion completes if needed
                     }
                 } else {
-                    Log.e("RestaurantViewModel", "Error fetching problems")
+                    Log.e("RestaurantViewModel", "Error fetching restaurants")
                 }
             }
         }
     }
 
-    fun fetchMyProblemsForUserEmail(userEmail: String) {
+    fun fetchFavouriteRestaurantsForUserEmail(userEmail: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val db = FirebaseFirestore.getInstance()
-            db.collection("Problems").whereEqualTo("userEmail", userEmail).get().addOnCompleteListener { task ->
+            db.collection("Restaurants").whereEqualTo("userEmail", userEmail).whereEqualTo("favourite", true) .get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val problems = mutableListOf<RestaurantModel>() // List of problems to be fetched
+                    val restaurants = mutableListOf<RestaurantModel>() // List of restaurants to be fetched
 
                     for (document in task.result!!) {
                         val imageName = document.getString("imageUrl")
 
-                        val problem = RestaurantModel(
+                        val restaurant = RestaurantModel(
                             key = document.id,
                             userEmail = document.getString("userEmail") ?: "",
                             imageUrl = imageName ?: "",
-                            description = document.getString("description") ?: "",
+                            menu = document.getString("menu") ?: "",
                             latitude = document.getDouble("latitude") ?: 0.0,
                             longitude = document.getDouble("longitude") ?: 0.0,
-                            title = document.getString("title") ?: "",
-                            dateStarted = document.getString("dateStarted") ?: "",
-                            ageOfRestaurant = document.getString("ageOfRestaurant") ?: "",
-                            suggestion = document.getString("suggestion") ?: "",
-                            expertName = document.getString("expertName") ?: ""
+                            name = document.getString("name") ?: "",
+                            address = document.getString("address") ?: "",
+                            foodtype = document.getString("foodtype") ?: "",
+                            review = document.getString("review") ?: "",
+                            favourite = document.getBoolean("favourite") ?: true
                         )
-                        problems.add(problem)
+                        restaurants.add(restaurant)
                     }
 
-                    // Insert problems into database within IO scope
+                    // Insert restaurants into database within IO scope
                     CoroutineScope(Dispatchers.IO).launch {
                         restaurantDao.deleteAll()
-                        restaurantDao.insertAll(problems)
+                        restaurantDao.insertAll(restaurants)
                     }.invokeOnCompletion {
                         // Do something after insertion completes if needed
                     }
                 } else {
-                    Log.e("RestaurantViewModel", "Error fetching problems for user email: $userEmail")
+                    Log.e("RestaurantViewModel", "Error fetching restaurants for user email: $userEmail")
                 }
             }
         }

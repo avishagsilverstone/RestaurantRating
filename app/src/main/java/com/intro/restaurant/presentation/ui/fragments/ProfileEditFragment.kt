@@ -34,7 +34,7 @@ class ProfileEditFragment : Fragment() {
     private var selectedImageUri: Uri? = null
     private lateinit var userTypeRadioGroup: RadioGroup
     private lateinit var normalUserRadioButton: RadioButton
-    private lateinit var expertUserRadioButton: RadioButton
+    private lateinit var ownerUserRadioButton: RadioButton
     companion object {
         private const val REQUEST_CODE_GALLERY = 1
     }
@@ -71,7 +71,7 @@ class ProfileEditFragment : Fragment() {
         edtName = view.findViewById(R.id.profile_name_edittext)
         userTypeRadioGroup = view.findViewById(R.id.radioGroupUserType)
         normalUserRadioButton = view.findViewById(R.id.regular_radio)
-        expertUserRadioButton = view.findViewById(R.id.expert_radio)
+        ownerUserRadioButton = view.findViewById(R.id.owner_radio)
         // Initialize with current user info
         val user = mAuth.currentUser
         user?.let {
@@ -97,7 +97,7 @@ class ProfileEditFragment : Fragment() {
 
     private fun updateProfile() {
         val name = edtName.text.toString().trim()
-        val userType = if (normalUserRadioButton.isChecked) "Normal User" else "Expert User"
+        val userType = if (normalUserRadioButton.isChecked) "Normal User" else "Owner User"
         filePath?.let { fileUri ->
             val ref = storageReference.child("profileImages/${mAuth.currentUser?.uid}")
             ref.putFile(fileUri).addOnSuccessListener { taskSnapshot ->

@@ -11,7 +11,7 @@ import com.intro.restaurant.data.model.RestaurantModel
 
 @Dao
 interface RestaurantDao {
-    @Query("SELECT * FROM RestaurantProblem")
+    @Query("SELECT * FROM Restaurant")
     fun getAll(): LiveData<List<RestaurantModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -19,7 +19,7 @@ interface RestaurantDao {
 
 
 
-    @Query("DELETE FROM RestaurantProblem")
+    @Query("DELETE FROM Restaurant")
     fun deleteAll()
 
     @Delete

@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso
 
 class RestaurantsAdapter(
     private val fragmentActivity: FragmentActivity,
-    var problems: List<RestaurantModel>,
+    var restaurants: List<RestaurantModel>,
     private val isEdit: Boolean
 ) : RecyclerView.Adapter<RestaurantViewHolder>() {
 
@@ -21,47 +21,29 @@ class RestaurantsAdapter(
         return RestaurantViewHolder(view)
     }
 
-    fun updateProblems(problems: List<RestaurantModel>) {
-        this.problems = problems
-        notifyDataSetChanged()
-    }
-
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        val problem = problems[position]
-
-        // Load image using Picasso library
-        Picasso.get().load(problem.imageUrl).into(holder.problemImage)
-
-        // Set problem title
-        holder.problemName.text = problem.title
-
-        // Set click listener to navigate to problem detail fragment
+        val restaurant = restaurants[position]
+        Picasso.get().load(restaurant.imageUrl).into(holder.restaurantImage)
+        holder.restaurantName.text = restaurant.name
         holder.itemView.setOnClickListener {
-            // Pass problem data to ProblemDetailFragment using bundle
             val bundle = Bundle().apply {
-                putString("problemId", problem.key)
-                putString("restaurantName", problem.title)
-                putString("userEmail", problem.userEmail)
-                putString("imageUrl", problem.imageUrl)
-                putString("description", problem.description)
-                putString("dateStarted", problem.dateStarted)
-                putString("ageOfRestaurant", problem.ageOfRestaurant)
-                putString("suggestion", problem.suggestion)
-                if (isEdit) {
-                    putString("expertName", problem.expertName)
-                }else{
-                    putString("expertName", "")
-                }
+                putString("restaurantId", restaurant.key)
+                putString("name", restaurant.name)
+                putString("userEmail", restaurant.userEmail)
+                putString("imageUrl", restaurant.imageUrl)
+                putString("menu", restaurant.menu)
+                putString("address", restaurant.address)
+                putString("foodtype", restaurant.foodtype)
+                putString("review", restaurant.review)
+                putBoolean("favourite", restaurant.favourite)
                 putBoolean("isEdit", isEdit)
             }
-
-            // Navigate to ProblemDetailFragment
             val navController = fragmentActivity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-            navController.navController.navigate(R.id.restaurantPageFragment, bundle)
+            navController.navController.navigate(R.id.restaurantDetailFragment, bundle)
         }
     }
 
     override fun getItemCount(): Int {
-        return problems.size
+        return restaurants.size
     }
 }
