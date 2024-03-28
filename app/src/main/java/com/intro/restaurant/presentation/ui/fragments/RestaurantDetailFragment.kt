@@ -196,6 +196,7 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
             val newRestaurantName = restaurantNameEditText.text.toString()
             val newMenu = textMenu.text.toString()
             val newFoodType = foodType.text.toString()
+            val newAddress = map_edittext.text.toString()
             val user = mAuth.currentUser
             var userName = "";
             user?.let {
@@ -220,11 +221,11 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
                 firebaseFirestore.collection("Restaurants").document(currentRestaurant.key.toString())
                     .update(
                         "name", newRestaurantName,
-                        "description", newMenu,
+                        "menu", newMenu,
                         "imageUrl", currentRestaurant.imageUrl,
                         "latitude", latitude1,
                         "longitude",longitude1,
-                        "address", newFoodType,
+                        "address", newAddress,
                         "foodtype", newFoodType,
                         "review", newReview,
                         "favourite", isFavorite)
@@ -257,11 +258,11 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
                                 firebaseFirestore.collection("Restaurants").document(currentRestaurant.key.toString())
                                     .update(
                                         "name", newRestaurantName,
-                                        "description", newMenu,
+                                        "menu", newMenu,
                                         "imageUrl", url.toString(),
                                         "latitude", latitude,
                                         "longitude", longitude,
-                                        "address", newFoodType,
+                                        "address", newAddress,
                                         "foodtype", newFoodType,
                                         "review", newReview,
                                         "favourite", isFavorite)
