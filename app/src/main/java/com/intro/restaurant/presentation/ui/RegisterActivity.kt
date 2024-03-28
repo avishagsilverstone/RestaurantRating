@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.intro.restaurant.R
+import com.intro.restaurant.presentation.ui.LoginActivity.Companion.setUserType
 import java.io.IOException
 
 class RegisterActivity : AppCompatActivity() {
@@ -141,7 +142,7 @@ class RegisterActivity : AppCompatActivity() {
         val userData = hashMapOf(
             "userType" to userType
         )
-
+        setUserType(userType)
         userRef.set(userData)
             .addOnSuccessListener {
             }

@@ -379,6 +379,12 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback  {
         }else{
             map_edittext.setOnClickListener { selectAddress() }
             reviewTextView.visibility = View.GONE
+            reviewEditText.visibility = View.GONE
+        }
+        if (getUserType().equals("Regular")){
+            saveButton.setText("Update Review");
+        }else{
+            reviewEditText.visibility = View.GONE
 
         }
     }
